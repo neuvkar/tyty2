@@ -476,12 +476,16 @@ function validateContactForm(data) {
     return required.every(field => data[field]?.trim());
 }
 
-function showNotification(message, type = 'success') {
+function showNotification(message, type) {
+    // Remove any existing notifications
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(notification => notification.remove());
+    
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
     notification.innerHTML = `
         <div class="notification-content">
-            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
             <span>${message}</span>
         </div>
     `;
@@ -489,13 +493,18 @@ function showNotification(message, type = 'success') {
     document.body.appendChild(notification);
     
     // Add show class after a small delay for animation
-    setTimeout(() => {
+    requestAnimationFrame(() => {
         notification.classList.add('show');
+        
+        // Remove notification after delay
         setTimeout(() => {
             notification.classList.remove('show');
-            setTimeout(() => notification.remove(), 300);
+            // Wait for animation to complete before removing element
+            setTimeout(() => {
+                notification.remove();
+            }, 500); // Match this with CSS transition duration
         }, 3000);
-    }, 100);
+    });
 }
 
 function initializeCheckoutPage() {

@@ -71,7 +71,7 @@ nav {
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1000;
+    z-index: 1001; /* Increased z-index to ensure it's above categories */
 }
 
 .logo {
@@ -335,7 +335,7 @@ footer {
 
 /* Update main container padding */
 main {
-    margin-top: 80px;
+    margin-top: 80px; /* Match nav height */
     padding: 0 var(--page-padding);
     max-width: 1800px;
     margin-left: auto;
@@ -378,42 +378,57 @@ main {
 /* Notification */
 .notification {
     position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    background: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transform: translateX(120%);
-    transition: transform 0.3s ease;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(150%);
+    padding: 12px 24px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     z-index: 1000;
-    max-width: 350px;
+    max-width: 400px;
+    width: 90%;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .notification.show {
-    transform: translateX(0);
+    transform: translateX(-50%) translateY(0);
 }
 
 .notification-content {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 12px;
+    font-size: 0.95rem;
 }
 
 .notification.success {
     border-left: 4px solid #2ecc71;
+    background: linear-gradient(to right, rgba(46, 204, 113, 0.1), rgba(255, 255, 255, 0.95));
 }
 
 .notification.error {
     border-left: 4px solid #e74c3c;
+    background: linear-gradient(to right, rgba(231, 76, 60, 0.1), rgba(255, 255, 255, 0.95));
 }
 
 .notification.success i {
     color: #2ecc71;
+    font-size: 1.2rem;
 }
 
 .notification.error i {
     color: #e74c3c;
+    font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+    .notification {
+        bottom: 16px;
+        width: calc(100% - 32px);
+        margin: 0 16px;
+    }
 }
 
 /* Animations */
@@ -829,42 +844,49 @@ img {
 /* Notification styles */
 .notification {
     position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    background: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transform: translateX(120%);
-    transition: transform 0.3s ease;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(150%);
+    padding: 12px 24px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     z-index: 1000;
-    max-width: 350px;
+    max-width: 400px;
+    width: 90%;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .notification.show {
-    transform: translateX(0);
+    transform: translateX(-50%) translateY(0);
 }
 
 .notification-content {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 12px;
+    font-size: 0.95rem;
 }
 
 .notification.success {
     border-left: 4px solid #2ecc71;
+    background: linear-gradient(to right, rgba(46, 204, 113, 0.1), rgba(255, 255, 255, 0.95));
 }
 
 .notification.error {
     border-left: 4px solid #e74c3c;
+    background: linear-gradient(to right, rgba(231, 76, 60, 0.1), rgba(255, 255, 255, 0.95));
 }
 
 .notification.success i {
     color: #2ecc71;
+    font-size: 1.2rem;
 }
 
 .notification.error i {
     color: #e74c3c;
+    font-size: 1.2rem;
 }
 
 /* Responsive adjustments */
@@ -1077,10 +1099,15 @@ img {
 }
 
 .category-filters {
-    padding: 1rem;  /* Reduced from 2rem */
+    position: sticky;
+    top: 80px; /* Height of nav bar plus some padding */
+    background: rgba(249, 249, 249, 0.95);
+    backdrop-filter: blur(5px);
+    padding: 1rem;
     text-align: center;
-    background: #f9f9f9;
-    margin-bottom: 1rem;  /* Reduced from 2rem */
+    margin-bottom: 0.5rem;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
 }
 
 .category-filters h3 {
