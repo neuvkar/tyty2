@@ -158,7 +158,7 @@ function createProductCard(product) {
         </div>
     `;
 
-    // Add click event to show modal
+    // Add click event to show modal with full details
     div.addEventListener('click', (e) => {
         // Don't show modal if clicking the add to cart button
         if (!e.target.closest('.add-to-cart')) {
@@ -170,26 +170,49 @@ function createProductCard(product) {
 }
 
 function showProductModal(product) {
-    elements.productModalDetails.innerHTML = `
-        <div class="modal-image-container">
-            <img src="${product.image}" 
-                 alt="${product.name}" 
-                 class="modal-image"
-                 onerror="this.src='/images/placeholder.jpg'">
-        </div>
-        <div class="modal-info">
-            <h2 class="modal-product-name">${product.name}</h2>
-            <p class="modal-product-price">${product.price.toFixed(2)} €</p>
-            <div class="modal-product-description">
-                ${product.description || 'Ei kuvausta saatavilla.'}
+    const modal = document.createElement('div');
+    modal.className = 'product-modal';
+    modal.innerHTML = `
+        <div class="product-modal-content">
+            <button class="close-modal">&times;</button>
+            <div class="modal-grid">
+                <div class="modal-image-container">
+                    <img src="${product.image}" 
+                         alt="${product.name}" 
+                         class="modal-image"
+                         onerror="this.src='/images/placeholder.jpg'">
+                </div>
+                <div class="modal-info">
+                    <h2>${product.name}</h2>
+                    <button class="add-to-cart modal-cart-button ${state.cart.has(product.id) ? 'in-cart' : ''}" 
+                            data-product-id="${product.id}">
+                        <i class="fas fa-shopping-cart"></i> 
+                        ${state.cart.has(product.id) ? 'Korissa' : 'Lisää koriin'}
+                    </button>
+                    <p class="modal-price">${product.price.toFixed(2)} €</p>
+                    <p class="modal-description">${product.description}</p>
+                    <div class="spec-item">
+                        <i class="fas fa-ruler-combined"></i>
+                        <span>Mitat: ${product.dimensions}</span>
+                    </div>
+                </div>
             </div>
-            <button class="modal-add-to-cart" onclick="addToCart(${product.id})">
-                <i class="fas fa-shopping-cart"></i> Lisää koriin
-            </button>
         </div>
     `;
-    elements.productModal.style.display = 'block';
-    document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+
+    document.body.appendChild(modal);
+    
+    // Close modal functionality
+    const closeBtn = modal.querySelector('.close-modal');
+    closeBtn.onclick = () => {
+        modal.remove();
+    };
+    
+    modal.onclick = (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    };
 }
 
 function closeProductModal() {
@@ -216,40 +239,43 @@ function initializeModal() {
     });
 }
 
-function addToCart(productId) {
+function addToCart(productId, event) {
+    // Prevent event bubbling
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
     const product = state.products.find(p => p.id === productId);
     if (!product) return;
 
+    // If product is already in cart, don't add it again
     if (state.cart.has(productId)) {
-        const item = state.cart.get(productId);
-        item.quantity += 1;
-    } else {
-        state.cart.set(productId, {
-            ...product,
-            quantity: 1
-        });
+        return;
     }
 
+    // Add new item to cart
+    state.cart.set(productId, {
+        ...product,
+        quantity: 1
+    });
+
     state.cartCount++;
-    state.cartTotal = calculateCartTotal(); // Use helper function
+    state.cartTotal = calculateCartTotal();
     updateCartUI();
     
     // Show notification
     showNotification(`${product.name} lisätty ostoskoriin`, 'success');
     
-    // Update button state
-    const button = event.target.closest('.modal-add-to-cart, .add-to-cart');
-    button.innerHTML = '<i class="fas fa-check"></i> Lisätty';
-    button.classList.add('added');
+    // Update all related buttons
+    const buttons = document.querySelectorAll(`.add-to-cart[data-product-id="${productId}"]`);
+    buttons.forEach(button => {
+        button.innerHTML = '<i class="fas fa-check"></i> Korissa';
+        button.classList.add('in-cart');
+    });
     
     // Add visual indicator to product card
     addCartIndicator(productId);
-    
-    setTimeout(() => {
-        button.innerHTML = '<i class="fas fa-shopping-cart"></i> Lisää koriin';
-        button.classList.remove('added');
-        closeProductModal();
-    }, 1500);
 }
 
 function updateCartUI() {
@@ -291,28 +317,45 @@ function removeFromCart(productId) {
     const item = state.cart.get(productId);
     state.cartCount -= item.quantity;
     state.cart.delete(productId);
-    state.cartTotal = calculateCartTotal(); // Use helper function
+    state.cartTotal = calculateCartTotal();
     
     updateCartUI();
-    if (state.isCheckoutPage) {
+    
+    // Update checkout UI if on checkout page
+    if (state.currentPage === 'checkout') {
         updateCheckoutUI();
     }
     
-    // Remove cart indicator from product card
-    const productCard = document.querySelector(`.product-card [data-product-id="${productId}"]`);
-    if (productCard) {
-        const indicator = productCard.closest('.product-card').querySelector('.cart-indicator');
-        if (indicator) {
-            indicator.remove();
+    // Remove cart indicators and reset buttons
+    const productCards = document.querySelectorAll('.product-card');
+    productCards.forEach(card => {
+        const button = card.querySelector(`[data-product-id="${productId}"]`);
+        if (button) {
+            button.classList.remove('in-cart');
+            button.innerHTML = '<i class="fas fa-shopping-cart"></i> Lisää koriin';
+            
+            const indicator = card.querySelector('.cart-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
         }
-        productCard.classList.remove('in-cart');
-        productCard.innerHTML = '<i class="fas fa-shopping-cart"></i> Lisää koriin';
-    }
+    });
+    
+    showNotification('Tuote poistettu ostoskorista', 'success');
 }
 
 function initializeCart() {
     document.querySelector('.cart').addEventListener('click', toggleCart);
     
+    // Use event delegation for add to cart buttons
+    document.addEventListener('click', (e) => {
+        const addToCartBtn = e.target.closest('.add-to-cart');
+        if (addToCartBtn && !addToCartBtn.classList.contains('in-cart')) {
+            const productId = parseInt(addToCartBtn.dataset.productId);
+            addToCart(productId, e);
+        }
+    });
+
     // Close cart modal when clicking outside
     document.addEventListener('click', (e) => {
         if (!elements.cartModal.contains(e.target) && 
@@ -322,15 +365,9 @@ function initializeCart() {
         }
     });
 
-    // Update checkout button handler
     elements.checkoutButton.addEventListener('click', () => {
-        toggleCart(); // Close cart modal
+        elements.cartModal.classList.remove('active'); // Close cart modal
         navigateToPage('checkout');
-    });
-
-    // Continue shopping button handler
-    document.querySelector('.continue-shopping').addEventListener('click', () => {
-        navigateToPage('products');
     });
 }
 
@@ -448,6 +485,15 @@ function showNotification(message, type = 'success') {
 }
 
 function initializeCheckoutPage() {
+    // Add click handler for the title
+    const siteTitle = document.querySelector('.site-title');
+    if (siteTitle) {
+        siteTitle.addEventListener('click', () => {
+            navigateToPage('products');
+            window.location.hash = ''; // Clear the hash
+        });
+    }
+
     if (window.location.pathname === '/kassa.html') {
         // Load cart data from localStorage
         const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
@@ -487,15 +533,14 @@ function updateCheckoutUI() {
         itemElement.className = 'checkout-item';
         itemElement.innerHTML = `
             <img src="${item.image}" alt="${item.name}" class="checkout-item-image">
-            <div class="checkout-item-details">
-                <h4>${item.name}</h4>
-                <p class="item-price">${item.price.toFixed(2)} €</p>
-                <p class="item-quantity">Määrä: ${item.quantity}</p>
-                <p class="item-total">${itemTotal.toFixed(2)} €</p>
-            </div>
             <button onclick="removeFromCart(${item.id})" class="remove-item">
                 <i class="fas fa-times"></i>
             </button>
+            <div class="checkout-item-details">
+                <h4 title="${item.name}">${item.name}</h4>
+                <p class="item-quantity">${item.quantity} kpl</p>
+                <p class="item-total">${itemTotal.toFixed(2)} €</p>
+            </div>
         `;
         elements.checkoutItems.appendChild(itemElement);
     });
