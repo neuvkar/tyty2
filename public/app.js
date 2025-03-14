@@ -346,6 +346,9 @@ function removeFromCart(productId) {
 }
 
 function initializeCart() {
+    // Ensure cart modal is closed by default
+    elements.cartModal.classList.remove('active');
+    
     document.querySelector('.cart').addEventListener('click', toggleCart);
     
     // Use event delegation for add to cart buttons
@@ -373,13 +376,16 @@ function initializeCart() {
 }
 
 function toggleCart() {
-    elements.cartModal.classList.toggle('active');
-    
-    // Update cart total when opening
-    if (elements.cartModal.classList.contains('active')) {
-        state.cartTotal = calculateCartTotal();
-        elements.cartTotal.textContent = `${state.cartTotal.toFixed(2)} €`;
-        updateCartUI();
+    // Only toggle if clicked
+    if (event && event.type === 'click') {
+        elements.cartModal.classList.toggle('active');
+        
+        // Update cart total when opening
+        if (elements.cartModal.classList.contains('active')) {
+            state.cartTotal = calculateCartTotal();
+            elements.cartTotal.textContent = `${state.cartTotal.toFixed(2)} €`;
+            updateCartUI();
+        }
     }
 }
 
@@ -775,4 +781,22 @@ function updateCartButtons(productId, isInCart) {
 document.addEventListener('DOMContentLoaded', () => {
     // ... existing initialization code ...
     initializeCheckout();
+});
+
+// Add CSS to ensure modals are hidden by default
+document.addEventListener('DOMContentLoaded', () => {
+    // Add style to hide modals by default
+    const style = document.createElement('style');
+    style.textContent = `
+        .cart-modal {
+            display: none;
+        }
+        .cart-modal.active {
+            display: block;
+        }
+        .product-modal {
+            display: none;
+        }
+    `;
+    document.head.appendChild(style);
 });
