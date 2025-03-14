@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tytin Puoti - Käsityönä valmistetut tuotteet">
+    <title>Tytin Puoti</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+</head>
+<body>
+    <nav>
+        <div class="hamburger">
+            <i class="fas fa-bars"></i>
+        </div>
+        <div class="logo">Tytin Puoti</div>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Etsi tuotteita...">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+        <div class="nav-links">
+            <a href="#" data-category="new" class="active">Uutta</a>
+            <a href="#" data-category="featured">Suositut</a>
+            <a href="#" data-category="sale">Tarjoukset</a>
+            <a href="#contact" data-page="contact">Yhteystiedot</a>
+        </div>
+        <div class="cart">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-count">0</span>
+        </div>
+    </nav>
+
+    <div class="sidebar">
+        <div class="sidebar-close">&times;</div>
+        <a href="#" data-category="featured">Etusivu</a>
+        <a href="#" data-category="new">Uutta</a>
+        <a href="#" data-category="sale">Tarjoukset</a>
+        <a href="#contact" data-page="contact">Yhteystiedot</a>
+    </div>
+
+    <main>
+        <!-- Products Page -->
+        <div class="products-page" id="products-page">
+            <div class="hero">
+                <h1>Käsityönä valmistetut tuotteet</h1>
+                <p> - Ainutlaatuisia ja laadukkaita käsitöitä Suomesta -</p>
+            </div>
+
+            <div class="category-filters">
+                <h3>Kategoriat</h3>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">Kaikki</button>
+                    <button class="filter-btn" data-filter="taulut">Taulut</button>
+                    <button class="filter-btn" data-filter="vaasit">Vaasit</button>
+                    <button class="filter-btn" data-filter="makrame">Makrame</button>
+                    <button class="filter-btn" data-filter="sekalaista">Sekalaista</button>
+                </div>
+            </div>
+
+            <div class="category-title">
+                <h2>Uudet tuotteet</h2>
+            </div>
+
+            <div class="products-grid" id="products-container">
+                <!-- Products loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Contact Page -->
+        <div class="contact-page" id="contact-page" style="display: none;">
+            <h1>Yhteystiedot</h1>
+            <div class="contact-grid">
+                <div class="contact-info-card">
+                    <h3>Ota yhteyttä</h3>
+                    <div class="contact-details">
+                        <p><i class="fas fa-map-marker-alt"></i> Käsityökatu 123, 00100 Helsinki</p>
+                        <p><i class="fas fa-phone"></i> +358 50 123 4567</p>
+                        <p><i class="fas fa-envelope"></i> info@tytinpuoti.fi</p>
+                        <p><i class="fas fa-clock"></i> Ma-Pe: 10-18, La: 10-16</p>
+                    </div>
+                    <div class="contact-map">
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1984.9803230219015!2d24.945064!3d60.169958!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNjDCsDEwJzExLjgiTiAyNMKwNTYnNDIuMiJF!5e0!3m2!1sfi!2sfi!4v1234567890"
+                            width="100%" 
+                            height="300" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy">
+                        </iframe>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <h3>Lähetä viesti</h3>
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name">Nimi *</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Sähköposti *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Puhelin</label>
+                            <input type="tel" id="phone" name="phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Aihe *</label>
+                            <input type="text" id="subject" name="subject" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Viesti *</label>
+                            <textarea id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="form-submit">Lähetä viesti</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checkout Page -->
+        <div class="checkout-page" id="checkout-page" style="display: none;">
+            <h1>Kassa</h1>
+            <div class="checkout-grid">
+                <div class="checkout-items">
+                    <!-- Items will be populated dynamically -->
+                </div>
+                <div class="checkout-summary">
+                    <h3>Yhteenveto</h3>
+                    <div class="summary-details">
+                        <div class="summary-row">
+                            <span>Välisumma:</span>
+                            <span class="subtotal">0.00 €</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Toimitus:</span>
+                            <span class="shipping">5.90 €</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Yhteensä:</span>
+                            <span class="total-amount">0.00 €</span>
+                        </div>
+                    </div>
+                    <button class="confirm-order-btn">Vahvista tilaus</button>
+                    <button class="continue-shopping">Jatka ostoksia</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Modal -->
+        <div class="product-modal">
+            <div class="product-modal-content">
+                <span class="close-modal">&times;</span>
+                <div class="product-modal-details">
+                    <!-- Product details will be loaded here dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Cart Modal -->
+        <div class="cart-modal">
+            <h3>Ostoskori</h3>
+            <div class="cart-items">
+                <!-- Cart items will be added here dynamically -->
+            </div>
+            <div class="cart-total">
+                <span>Yhteensä:</span>
+                <span class="total-amount">0.00 €</span>
+            </div>
+            <button class="checkout-button">Siirry kassalle</button>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
